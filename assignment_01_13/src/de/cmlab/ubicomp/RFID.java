@@ -34,13 +34,38 @@ public class RFID {
 	 * @throws PhidgetException
 	 * @throws IOException
 	 */
-	public static void main(String[] args) throws PhidgetException, IOException {
+	public static void main(String[] args) throws IOException {
 		RFIDPhidget rfid;
+		try {
+			rfid = new RFIDPhidget();
 
-		// System.out.println(Phidget.getLibraryVersion());
+			initPhidget(rfid);
 
-		rfid = new RFIDPhidget();
+			rfid.openAny();
 
+			System.out.println("waiting for RFID attachment...");
+			rfid.waitForAttachment(1000);
+
+			System.out.println("Serial: " + rfid.getSerialNumber());
+			System.out.println("Outputs: " + rfid.getOutputCount());
+
+			System.out.println("Outputting events.  Input to stop.");
+			System.in.read();
+
+			System.out.print("closing...");
+			rfid.close();
+			rfid = null;
+			System.out.println(" ok");
+
+		} catch (PhidgetException e) {
+			System.err.println(e);
+		}
+	}
+
+	/**
+	 * @param rfid
+	 */
+	private static void initPhidget(RFIDPhidget rfid) {
 		rfid.addAttachListener(new AttachListener() {
 			public void attached(AttachEvent ae) {
 				try {
@@ -67,37 +92,24 @@ public class RFID {
 		rfid.addTagGainListener(new TagGainListener() {
 			public void tagGained(TagGainEvent oe) {
 				try {
+					// blink
 					((RFIDPhidget) oe.getSource()).setLEDOn(true);
 					Thread.sleep(200);
 					((RFIDPhidget) oe.getSource()).setLEDOn(false);
 					Thread.sleep(100);
 					((RFIDPhidget) oe.getSource()).setLEDOn(true);
+
 					if (oe.getValue().equals("0102ac837c")) {
 						String url = "https://www.google.com";
-
-						if (Desktop.isDesktopSupported()) {
-							Desktop desktop = Desktop.getDesktop();
-							try {
-								desktop.browse(new URI(url));
-							} catch (IOException | URISyntaxException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						} else {
-							Runtime runtime = Runtime.getRuntime();
-							try {
-								runtime.exec("xdg-open " + url);
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
+						openBrowser(url);
 					}
+
 				} catch (PhidgetException | InterruptedException e) {
 				}
 				System.out.println("Tag Gained: " + oe.getValue() + " (Proto:"
 						+ oe.getProtocol() + ")");
 			}
+
 		});
 		rfid.addTagLossListener(new TagLossListener() {
 			public void tagLost(TagLossEvent oe) {
@@ -114,27 +126,32 @@ public class RFID {
 			}
 		});
 
-		rfid.openAny();
-		System.out.println("waiting for RFID attachment...");
-		rfid.waitForAttachment(1000);
-
-		System.out.println("Serial: " + rfid.getSerialNumber());
-		System.out.println("Outputs: " + rfid.getOutputCount());
-
 		// How to write a tag:
 		// rfid.write("A TAG!!", RFIDPhidget.PHIDGET_RFID_PROTOCOL_PHIDGETS,
 		// false);
+	}
 
-		System.out.println("Outputting events.  Input to stop.");
-		System.in.read();
-		System.out.print("closing...");
-		rfid.close();
-		rfid = null;
-		System.out.println(" ok");
-		// if (false) {
-		// System.out.println("wait for finalization...");
-		// System.gc();
-		// }
+	/**
+	 * @param url
+	 */
+	private static void openBrowser(String url) {
+		if (Desktop.isDesktopSupported()) {
+			Desktop desktop = Desktop.getDesktop();
+			try {
+				desktop.browse(new URI(url));
+			} catch (IOException | URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			Runtime runtime = Runtime.getRuntime();
+			try {
+				runtime.exec("xdg-open " + url);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

@@ -1,0 +1,76 @@
+<!-- HCI Group: Ubiquitous Computing Assignments -->
+<!-- University of Bamberg, Prof. Dr. Tom Gross, Christoph Beckmann -->
+<!-- <your names> -->
+<!-- Build file for the UbiComp assignment: <your topic> -->
+<!-- ************************************************************ -->
+
+<project name="<your project name>" default="compile" basedir=".">
+	<description>
+		<description of your project>
+	</description>
+
+	<property name="src" value="./src"/>
+	<property name="build" value="./build"/>
+	<property name="dist" location="./dist"/>
+	<property name="lib" location="./lib"/>
+	<property name="doc" location="./doc"/>
+	<property name="src.files" value=“/de/cmlab/ubicomp/RFID.java/>
+	
+	<target name="prepare">
+		<tstamp/>
+		<mkdir dir="${build}"/>
+        	<mkdir dir="${build}/lib"/>
+	</target>
+
+	<target name="compile" depends="prepare">
+		<javac srcdir="${src}" destdir="${build}" includes="${src.files}">
+			<classpath>
+				<pathelement path="${lib}/ "/>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="run" depends="compile"> 
+		<java classname="de.cmlab.ubicomp.<your classname>">
+			<classpath>
+				<pathelement path="${build}"/>
+			</classpath>
+		</java>
+	</target>
+
+	<target name="dist" depends="compile">
+		<jar destfile="${dist}/<your target name>.jar" basedir="${build}">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Main-Class" value="<your main class name>" />
+			</manifest>
+		</jar>
+	</target>
+	
+	
+	<target name="clean" description="clean up">
+		<delete dir="${build}"/>
+		<delete dir="${dist}"/>
+	</target>
+
+	<target name="javadoc">
+		<javadoc
+			destdir="${doc}"
+			access="public"
+			source="1.7"
+			use="true"
+			notree="false"
+			nonavbar="false"
+			noindex="false"
+			splitindex="true"
+			author="true"
+			version="true"
+			packagenames="<your package name>"
+			sourcepath="src">
+			<link href="http://docs.oracle.com/javase/7/docs/api/"/>
+		</javadoc>
+	</target>
+
+	<target name="all" depends="clean,prepare,compile,run"/>
+
+</project>

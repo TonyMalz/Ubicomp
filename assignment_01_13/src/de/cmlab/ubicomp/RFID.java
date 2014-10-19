@@ -29,9 +29,11 @@ import com.phidgets.event.TagLossListener;
  */
 public class RFID {
 
+	// TODO: Main Javadoc!
 	/**
+	 * Main method
+	 * 
 	 * @param args
-	 * @throws PhidgetException
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
@@ -50,6 +52,7 @@ public class RFID {
 			System.out.println("Outputs: " + rfid.getOutputCount());
 
 			System.out.println("Outputting events.  Input to stop.");
+			// TODO: Was wird hier gelesen?
 			System.in.read();
 
 			System.out.print("closing...");
@@ -63,7 +66,21 @@ public class RFID {
 	}
 
 	/**
+	 * Adds Listeners to configure the given {@link RFIDPhidget}'s
+	 * behavior:</br>
+	 * <ul>
+	 * <li>AttachListener: &nbsp; &nbsp; antenna on; LED on</li>
+	 * <li>DetachListener:</li>
+	 * <li>ErrorListener:</li>
+	 * <li>TagGainListener: &nbsp; LED on->off ->on; eventually
+	 * {@link #openBrowser(String)}</li>
+	 * <li>TagLossListener: &nbsp; LED off</li>
+	 * </ul>
+	 * </br> If the tag's id equals <i>0102ac837c</i>, {@link #openBrowser()}
+	 * will be executed with <i>"www.google.com"</i> as input.
+	 * 
 	 * @param rfid
+	 *            : the RFIDPhidget object, which will get the listeners
 	 */
 	private static void initPhidget(RFIDPhidget rfid) {
 		rfid.addAttachListener(new AttachListener() {
@@ -120,6 +137,8 @@ public class RFID {
 				System.out.println(oe);
 			}
 		});
+
+		// TODO: überhaupt benötigt?
 		rfid.addOutputChangeListener(new OutputChangeListener() {
 			public void outputChanged(OutputChangeEvent oe) {
 				System.out.println(oe);
@@ -132,7 +151,10 @@ public class RFID {
 	}
 
 	/**
+	 * Displays the given <b>url</b> in the default browser.
+	 * 
 	 * @param url
+	 *            , to open
 	 */
 	private static void openBrowser(String url) {
 		if (Desktop.isDesktopSupported()) {

@@ -1,2 +1,2 @@
-Ubicomp2
+Ubicomp
 =======

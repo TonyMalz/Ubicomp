@@ -24,19 +24,27 @@ import com.phidgets.event.TagLossEvent;
 import com.phidgets.event.TagLossListener;
 
 /**
- * @author tony
- * 
+ * RFID Phidget Test Class
+ * <p>
+ * Waits for an RFID Phidget to connect via USB or webservice <br/>
+ * <ul>
+ * <li>Blinks on tag recognition
+ * <li>Tries to open a browser window if {@link #TEST_TOKEN} was identified
+ * </ul>
+ * </p>
  */
 public class RFID {
 
-	// TODO: Main Javadoc!
+	private static final String TEST_URL = "https://www.google.com";
+	private static final String TEST_TOKEN = "1900c5ed12";
+
 	/**
 	 * Main method
 	 * 
 	 * @param args
 	 * @throws IOException
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		RFIDPhidget rfid;
 		try {
 			rfid = new RFIDPhidget();
@@ -44,40 +52,50 @@ public class RFID {
 			initPhidget(rfid);
 
 			rfid.openAny();
-
 			System.out.println("waiting for RFID attachment...");
-			rfid.waitForAttachment(1000);
+			rfid.waitForAttachment();
 
-			System.out.println("Serial: " + rfid.getSerialNumber());
-			System.out.println("Outputs: " + rfid.getOutputCount());
+			printPhidgetInfo(rfid);
 
-			System.out.println("Outputting events.  Input to stop.");
-			// TODO: Was wird hier gelesen?
+			System.out.println("\nPress any key to EXIT\n");
+			System.out.println("Listening for events...\n");
 			System.in.read();
 
 			System.out.print("closing...");
 			rfid.close();
-			rfid = null;
 			System.out.println(" ok");
 
-		} catch (PhidgetException e) {
+		} catch (PhidgetException | IOException e) {
 			System.err.println(e);
 		}
+	}
+
+	/**
+	 * Display the phidget's serial number and available outputs
+	 * 
+	 * @param rfid
+	 * @throws PhidgetException
+	 */
+	private static void printPhidgetInfo(RFIDPhidget rfid)
+			throws PhidgetException {
+		System.out.println("Serial: " + rfid.getSerialNumber());
+		System.out.println("Outputs: " + rfid.getOutputCount());
 	}
 
 	/**
 	 * Adds Listeners to configure the given {@link RFIDPhidget}'s
 	 * behavior:</br>
 	 * <ul>
-	 * <li>AttachListener: &nbsp; &nbsp; antenna on; LED on</li>
-	 * <li>DetachListener:</li>
-	 * <li>ErrorListener:</li>
+	 * <li>AttachListener: &nbsp; &nbsp; antenna on; LED off</li>
+	 * <li>DetachListener: &nbsp;&nbsp;&nbsp;log event</li>
+	 * <li>ErrorListener: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;log event</li>
 	 * <li>TagGainListener: &nbsp; LED on->off ->on; eventually
 	 * {@link #openBrowser(String)}</li>
 	 * <li>TagLossListener: &nbsp; LED off</li>
 	 * </ul>
-	 * </br> If the tag's id equals <i>0102ac837c</i>, {@link #openBrowser()}
-	 * will be executed with <i>"www.google.com"</i> as input.
+	 * </br> If the tag's id equals <i>{@link #TEST_TOKEN}</i>,
+	 * {@link #openBrowser()} will be executed with <i>{@link #TEST_URL}</i> as
+	 * input.
 	 * 
 	 * @param rfid
 	 *            : the RFIDPhidget object, which will get the listeners
@@ -87,7 +105,7 @@ public class RFID {
 			public void attached(AttachEvent ae) {
 				try {
 					((RFIDPhidget) ae.getSource()).setAntennaOn(true);
-					((RFIDPhidget) ae.getSource()).setLEDOn(true);
+					((RFIDPhidget) ae.getSource()).setLEDOn(false);
 				} catch (PhidgetException ex) {
 				}
 				System.out.println("attachment of " + ae);
@@ -102,29 +120,41 @@ public class RFID {
 
 		rfid.addErrorListener(new ErrorListener() {
 			public void error(ErrorEvent ee) {
-				System.out.println("error event for " + ee);
+				System.err.println("error event for " + ee);
 			}
 		});
 
 		rfid.addTagGainListener(new TagGainListener() {
 			public void tagGained(TagGainEvent oe) {
+				System.out.println("Tag Gained: " + oe.getValue() + " (Proto:"
+						+ oe.getProtocol() + ")");
 				try {
-					// blink
-					((RFIDPhidget) oe.getSource()).setLEDOn(true);
-					Thread.sleep(200);
-					((RFIDPhidget) oe.getSource()).setLEDOn(false);
-					Thread.sleep(100);
-					((RFIDPhidget) oe.getSource()).setLEDOn(true);
-
-					if (oe.getValue().equals("0102ac837c")) {
-						String url = "https://www.google.com";
-						openBrowser(url);
+					blink(((RFIDPhidget) oe.getSource()));
+					if (oe.getValue().equals(TEST_TOKEN)) {
+						System.out.println("TEST_TOKEN recognized!");
+						openBrowser(TEST_URL);
 					}
 
 				} catch (PhidgetException | InterruptedException e) {
+					System.err.println(e);
 				}
-				System.out.println("Tag Gained: " + oe.getValue() + " (Proto:"
-						+ oe.getProtocol() + ")");
+			}
+
+			/**
+			 * Executes a blink pattern
+			 * 
+			 * @param rfid
+			 *            current RFID Phidget
+			 * @throws PhidgetException
+			 * @throws InterruptedException
+			 */
+			private void blink(RFIDPhidget rfid) throws PhidgetException,
+					InterruptedException {
+				rfid.setLEDOn(true);
+				Thread.sleep(200);
+				rfid.setLEDOn(false);
+				Thread.sleep(100);
+				rfid.setLEDOn(true);
 			}
 
 		});
@@ -134,20 +164,17 @@ public class RFID {
 					((RFIDPhidget) oe.getSource()).setLEDOn(false);
 				} catch (PhidgetException e) {
 				}
-				System.out.println(oe);
+				System.out.println("Tag Lost: " + oe.getValue() + " (Proto:"
+						+ oe.getProtocol() + ")");
+				System.out.println();
 			}
 		});
 
-		// TODO: überhaupt benötigt?
 		rfid.addOutputChangeListener(new OutputChangeListener() {
 			public void outputChanged(OutputChangeEvent oe) {
 				System.out.println(oe);
 			}
 		});
-
-		// How to write a tag:
-		// rfid.write("A TAG!!", RFIDPhidget.PHIDGET_RFID_PROTOCOL_PHIDGETS,
-		// false);
 	}
 
 	/**
@@ -160,20 +187,21 @@ public class RFID {
 		if (Desktop.isDesktopSupported()) {
 			Desktop desktop = Desktop.getDesktop();
 			try {
+				System.out.print("opening browser with URL: " + url + " ...");
 				desktop.browse(new URI(url));
+				System.out.println("ok");
 			} catch (IOException | URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.err.println(e);
 			}
 		} else {
 			Runtime runtime = Runtime.getRuntime();
 			try {
+				System.out.print("opening browser with URL: " + url + " ...");
 				runtime.exec("xdg-open " + url);
+				System.out.println("ok");
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.err.println(e);
 			}
 		}
 	}
-
 }

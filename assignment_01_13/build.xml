@@ -1,6 +1,6 @@
 <!-- HCI Group: Ubiquitous Computing Assignments -->
 <!-- University of Bamberg, Prof. Dr. Tom Gross, Christoph Beckmann -->
-<!-- <your names> -->
+<!-- Christian Zeck, Michael Glasunov, Tony Malzhacker -->
 <!-- Build file for the UbiComp assignment: <your topic> -->
 <!-- ************************************************************ -->
 
@@ -20,7 +20,6 @@
     <target name="prepare">
 		<tstamp/>
 		<mkdir dir="${build}"/>
-        <mkdir dir="${build}/lib"/>
 	</target>
 
 	<target name="compile" depends="prepare">
@@ -31,9 +30,9 @@
 	<target name="run" depends="compile">
 		<java classname="de.cmlab.ubicomp.RFID">
 			<classpath>
-              <path location="${build}"/>
-			  <path refid="classpath"/>
-            </classpath>
+                		<path location="${build}"/>
+			  	<path refid="classpath"/>
+            		</classpath>
 		</java>
 	</target>
 
@@ -41,7 +40,8 @@
 		<jar destfile="${dist}/${ant.project.name}.jar" basedir="${build}">
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
-				<attribute name="Main-Class" value="${main.class}" />
+				<attribute name="Main-Class" value="de.cmlab.ubicomp.RFID" />
+				<attribute name="Class-Path" value=". ../lib/phidget21.jar" />
 			</manifest>
 		</jar>
 	</target>

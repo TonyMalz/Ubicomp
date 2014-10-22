@@ -39,7 +39,9 @@ public class RFID {
 	private static final String TEST_TOKEN = "1900c5ed12";
 
 	/**
-	 * Main method
+	 * Main method<br/>
+	 * 
+	 * Tries to initialize the RFID phidget and starts listening for events
 	 * 
 	 * @param args
 	 * @throws IOException
@@ -102,6 +104,7 @@ public class RFID {
 	 */
 	private static void initPhidget(RFIDPhidget rfid) {
 		rfid.addAttachListener(new AttachListener() {
+			@Override
 			public void attached(AttachEvent ae) {
 				try {
 					((RFIDPhidget) ae.getSource()).setAntennaOn(true);
@@ -113,18 +116,21 @@ public class RFID {
 		});
 
 		rfid.addDetachListener(new DetachListener() {
+			@Override
 			public void detached(DetachEvent ae) {
 				System.out.println("detachment of " + ae);
 			}
 		});
 
 		rfid.addErrorListener(new ErrorListener() {
+			@Override
 			public void error(ErrorEvent ee) {
 				System.err.println("error event for " + ee);
 			}
 		});
 
 		rfid.addTagGainListener(new TagGainListener() {
+			@Override
 			public void tagGained(TagGainEvent oe) {
 				System.out.println("Tag Gained: " + oe.getValue() + " (Proto:"
 						+ oe.getProtocol() + ")");
@@ -159,6 +165,7 @@ public class RFID {
 
 		});
 		rfid.addTagLossListener(new TagLossListener() {
+			@Override
 			public void tagLost(TagLossEvent oe) {
 				try {
 					((RFIDPhidget) oe.getSource()).setLEDOn(false);
@@ -171,6 +178,7 @@ public class RFID {
 		});
 
 		rfid.addOutputChangeListener(new OutputChangeListener() {
+			@Override
 			public void outputChanged(OutputChangeEvent oe) {
 				System.out.println(oe);
 			}

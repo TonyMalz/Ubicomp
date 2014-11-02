@@ -1,7 +1,7 @@
 <!-- HCI Group: Ubiquitous Computing Assignments -->
 <!-- University of Bamberg, Prof. Dr. Tom Gross, Christoph Beckmann -->
-<!-- <your names> -->
-<!-- Build file for the UbiComp assignment: <your topic> -->
+<!-- Christian Zeck, Michael Glasunov, Tony Malzhacker -->
+<!-- Build file for the UbiComp assignment: #2 XML-RPC -->
 <!-- ************************************************************ -->
 
 <project name="assignment_02_13" default="compile" basedir=".">
@@ -51,7 +51,8 @@
 		<jar destfile="${dist}/${ant.project.name}.jar" basedir="${build}">
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
-				<attribute name="Main-Class" value="${main.class}" />
+				<attribute name="Main-Class" value="de.cmlab.ubicomp.Server" />
+				<attribute name="Class-Path" value=". ../lib/xmlrpc-1.2-b1.jar" />
 			</manifest>
 		</jar>
 	</target>

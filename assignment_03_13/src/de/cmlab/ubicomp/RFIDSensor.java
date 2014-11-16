@@ -78,7 +78,7 @@ public class RFIDSensor {
 				}
 			} catch (Exception e) {
 				System.err.println("XML request failed: " + e.getMessage());
-				return;
+				System.exit(0);
 			}
 
 			// register phidget via xml description
@@ -97,7 +97,7 @@ public class RFIDSensor {
 				}
 			} catch (Exception e) {
 				System.err.println("XML request failed:" + e.getMessage());
-				return;
+				System.exit(0);
 			}
 
 			System.out.println("\nPress any key to EXIT\n");
@@ -115,7 +115,6 @@ public class RFIDSensor {
 				server.execute("SensorPort.unregisterSensor", param);
 			} catch (Exception e) {
 				System.err.println("XML request failed:" + e.getMessage());
-				return;
 			}
 
 			// DONE
@@ -180,9 +179,18 @@ public class RFIDSensor {
 				params.add("");
 				params.add(EVENT_TAG_GAINED + " " + oe.getValue());
 				try {
+					if (server == null) {
+						System.out
+								.println("Server not yet ready, trying again..");
+						Thread.sleep(500);
+						if (server == null) {
+							System.err.println("Server is gone!!");
+							System.exit(0);
+						}
+					}
 					server.execute("SensorPort.notify", params);
-				} catch (XmlRpcException | IOException e1) {
-					System.err.println("XMLRPC Error:" + e1.getMessage());
+				} catch (Exception e) {
+					System.err.println("XMLRPC Error:" + e.getMessage());
 				}
 
 				System.out.println("Tag Gained: " + oe.getValue() + " (Proto:"
@@ -222,8 +230,8 @@ public class RFIDSensor {
 				params.add(EVENT_TAG_LOST + " " + oe.getValue());
 				try {
 					server.execute("SensorPort.notify", params);
-				} catch (XmlRpcException | IOException e1) {
-					System.err.println("XMLRPC Error:" + e1.getMessage());
+				} catch (XmlRpcException | IOException e) {
+					System.err.println("XMLRPC Error:" + e.getMessage());
 				}
 
 				try {

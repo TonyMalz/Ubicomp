@@ -71,26 +71,46 @@ public class RFIDClient {
 			client.start();
 			System.out.println("RFIDClient: started successfully.");
 
-			// register to sens-sation server
-			System.out.println("RFIDClient: subscribing to sensor...");
+			// connect to sens-ation server
+			System.out.println("RFIDClient: looking for RFID sensor...");
 			server = new XmlRpcClient("http://localhost:"
 					+ SENSATION_XML_RPC_PORT + "/RPC2");
 
-			Vector<String> params = new Vector<>();
-			params.add("localhost");// ip
-			params.add(RFIDSensor.SENSOR_ID);// sensorID
-			params.add("" + CLIENT_XML_RPC_PORT);// port
-			String result = (String) server.execute("GatewayXMLRPC.register",
-					params);
-
-			if (result != null && result.equals("done")) {
+			// check whether RFID sensor is available
+			{
+				Vector<String> params = new Vector<>();
+				Object sensors = server.execute(
+						"GatewayXMLRPC.getAllSensorsVector", params);
+				if (!(sensors instanceof Vector) || sensors == null
+						|| !((Vector) sensors).contains(RFIDSensor.SENSOR_ID)) {
+					System.err
+							.println("RPCClient: RFIDSensor not found... quitting!");
+					System.exit(0);
+				}
 				System.out.println("OK");
-			} else {
-				System.err.println("Error registering RFIDClient!");
+			}
+
+			System.out.println("RFIDClient: subscribing to sensor...");
+			// register client
+			{
+				Vector<String> params = new Vector<>();
+				params.add("127.0.0.1");// ip
+				params.add(RFIDSensor.SENSOR_ID);// sensorID
+				params.add("" + CLIENT_XML_RPC_PORT);// port
+				String result = (String) server.execute(
+						"GatewayXMLRPC.register", params);
+
+				if (result != null && result.equals("done")) {
+					System.out.println("OK");
+				} else {
+					System.err.println("Error registering RFIDClient!");
+					System.exit(0);
+				}
 			}
 
 		} catch (Exception exception) {
 			System.err.println("RFIDClient: " + exception.getMessage());
+			System.exit(0);
 		}
 	}
 }

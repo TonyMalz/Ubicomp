@@ -14,6 +14,7 @@
 	<property name="dist" location="./dist"/>
 	<property name="lib" location="./lib"/>
 	<property name="doc" location="./doc"/>
+	<property name="jar" location="./jar"/>
     <path id="classpath">
       <fileset dir="${lib}" includes="**/*.jar"/>
     </path>
@@ -28,12 +29,28 @@
 	</target>
 
 	<target name="run" depends="compile">
-		<java classname="de.cmlab.ubicomp.RFID">
-			<classpath>
-                		<path location="${build}"/>
-			  	<path refid="classpath"/>
-            		</classpath>
-		</java>
+		<parallel>
+			<java jar="sens-ation_1.73.jar" fork="true">  
+			</java>
+			<sequential>
+				<sleep seconds="3"/>
+				<java classname="de.cmlab.ubicomp.RFIDSensor">
+					<classpath>
+					  <path location="${build}"/>
+					  <path refid="classpath"/>
+					</classpath>
+				</java>
+			</sequential>
+			<sequential>
+				<sleep seconds="6"/>
+				<java classname="de.cmlab.ubicomp.RFIDClient">
+					<classpath>
+					  <path location="${build}"/>
+					  <path refid="classpath"/>
+					</classpath>
+				</java>
+			</sequential>
+		</parallel>
 	</target>
 
 	<target name="dist" depends="compile">

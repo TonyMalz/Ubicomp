@@ -30,8 +30,7 @@
 
 	<target name="run" depends="compile">
 		<parallel>
-			<java jar="sens-ation_1.73.jar" fork="true">  
-			</java>
+			<java dir="sens-ation" jar="sens-ation/sens-ation_1.73.jar" failonerror="true" fork="true" />  
 			<sequential>
 				<sleep seconds="3"/>
 				<java classname="de.cmlab.ubicomp.RFIDSensor">

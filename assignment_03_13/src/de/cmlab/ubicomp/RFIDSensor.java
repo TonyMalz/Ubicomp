@@ -60,7 +60,7 @@ public class RFIDSensor {
 			initPhidget(rfid);
 
 			rfid.openAny();
-			System.out.println("waiting for RFID attachment...");
+			System.out.println("RFIDSensor: waiting for RFID attachment...");
 			rfid.waitForAttachment();
 
 			// connect to sens-sation server
@@ -68,21 +68,21 @@ public class RFIDSensor {
 					+ SENSATION_XML_RPC_PORT + "/RPC2");
 
 			// check server status
-			System.out.println("Pinging server at port:"
+			System.out.println("RFIDSensor: Pinging server at port:"
 					+ SENSATION_XML_RPC_PORT);
 			try {
 				String ok = (String) server.execute("SensorPort.ping",
 						new Vector<String>());
 				if (ok.equals("Server running")) {
-					System.out.println("Server is running...");
+					System.out.println("RFIDSensor: Server is running...");
 				}
 			} catch (Exception e) {
-				System.err.println("XML request failed: " + e.getMessage());
+				System.err.println("RFIDSensor: XML request failed: " + e.getMessage());
 				System.exit(0);
 			}
 
 			// register phidget via xml description
-			System.out.println("Registering sensor...");
+			System.out.println("RFIDSensor: Registering sensor...");
 			try {
 				Vector<String> xml = new Vector<>();
 				xml.add("<Sensor id=\""
@@ -92,33 +92,33 @@ public class RFIDSensor {
 				String response = (String) server.execute(
 						"SensorPort.updateSensor", xml);
 				if (response.equals(SENSOR_ID)) {
-					System.out.println("Sensor with id: " + SENSOR_ID
+					System.out.println("RFIDSensor: Sensor with id: " + SENSOR_ID
 							+ " was registered successfully");
 				}
 			} catch (Exception e) {
-				System.err.println("XML request failed:" + e.getMessage());
+				System.err.println("RFIDSensor: XML request failed:" + e.getMessage());
 				System.exit(0);
 			}
 
-			System.out.println("\nPress any key to EXIT\n");
-			System.out.println("Listening for events...\n");
+			System.out.println("\nRFIDSensor: Press any key to EXIT\n");
+			System.out.println("RFIDSensor: Listening for events...\n");
 			System.in.read();
 
-			System.out.println("closing...");
+			System.out.println("RFIDSensor: closing...");
 			rfid.close();
 
 			// unregistering sensor
-			System.out.println("Unregistering sensor...");
+			System.out.println("RFIDSensor: Unregistering sensor...");
 			try {
 				Vector<String> param = new Vector<>();
 				param.add(SENSOR_ID);
 				server.execute("SensorPort.unregisterSensor", param);
 			} catch (Exception e) {
-				System.err.println("XML request failed:" + e.getMessage());
+				System.err.println("RFIDSensor: XML request failed:" + e.getMessage());
 			}
 
 			// DONE
-			System.out.println("DONE");
+			System.out.println("RFIDSensor: DONE");
 
 		} catch (PhidgetException | IOException e) {
 			System.err.println(e);
@@ -193,7 +193,7 @@ public class RFIDSensor {
 					System.err.println("XMLRPC Error:" + e.getMessage());
 				}
 
-				System.out.println("Tag Gained: " + oe.getValue() + " (Proto:"
+				System.out.println("RFIDSensor: Tag Gained: " + oe.getValue() + " (Proto:"
 						+ oe.getProtocol() + ")");
 				try {
 					blink(((RFIDPhidget) oe.getSource()));
@@ -238,7 +238,7 @@ public class RFIDSensor {
 					((RFIDPhidget) oe.getSource()).setLEDOn(false);
 				} catch (PhidgetException e) {
 				}
-				System.out.println("Tag Lost: " + oe.getValue() + " (Proto:"
+				System.out.println("RFIDSensor: Tag Lost: " + oe.getValue() + " (Proto:"
 						+ oe.getProtocol() + ")");
 				System.out.println();
 			}

@@ -27,7 +27,7 @@ public class RFIDClient {
 		String tag = tagInfo[1];
 
 		if (event.equals(RFIDSensor.EVENT_TAG_GAINED) && tag.equals(TEST_TOKEN)) {
-			System.out.println("TEST_TOKEN recognized!");
+			System.out.println("RFIDClient: TEST_TOKEN recognized!");
 			openBrowser(TEST_URL);
 		}
 
@@ -43,7 +43,7 @@ public class RFIDClient {
 		if (Desktop.isDesktopSupported()) {
 			Desktop desktop = Desktop.getDesktop();
 			try {
-				System.out.print("opening browser with URL: " + url + " ...");
+				System.out.print("RFIDClient: opening browser with URL: " + url + " ...");
 				desktop.browse(new URI(url));
 				System.out.println("ok");
 			} catch (IOException | URISyntaxException e) {
@@ -52,7 +52,7 @@ public class RFIDClient {
 		} else {
 			Runtime runtime = Runtime.getRuntime();
 			try {
-				System.out.print("opening browser with URL: " + url + " ...");
+				System.out.print("RFIDClient: opening browser with URL: " + url + " ...");
 				runtime.exec("xdg-open " + url);
 				System.out.println("ok");
 			} catch (IOException e) {

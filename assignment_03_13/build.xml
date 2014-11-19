@@ -60,7 +60,7 @@
 			</manifest>
 			<zipgroupfileset dir="${lib}" includes="xmlrpc-1.2-b1.jar"/>
 		</jar>
-		<jar destfile="${dist}/RFIDSensor.jar" basedir="${build}" includes="de/cmlab/ubicomp/RFIDSensor.class">
+		<jar destfile="${dist}/RFIDSensor.jar" basedir="${build}" includes="de/cmlab/ubicomp/RFIDSensor.class, de/cmlab/ubicomp/RFIDSensor$1.class, de/cmlab/ubicomp/RFIDSensor$2.class, de/cmlab/ubicomp/RFIDSensor$3.class, de/cmlab/ubicomp/RFIDSensor$4.class, de/cmlab/ubicomp/RFIDSensor$5.class, de/cmlab/ubicomp/RFIDSensor$6.class">
 			<manifest>
 		        <attribute name="Built-By" value="${user.name}" />
 		        <attribute name="Main-Class" value="de.cmlab.ubicomp.RFIDSensor" />

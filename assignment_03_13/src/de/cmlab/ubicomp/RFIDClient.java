@@ -32,8 +32,7 @@ public class RFIDClient {
 	private static final String TEST_TOKEN = "1900c5ed12";
 
 	/**
-	 * This method is called by sens-ation, if the sensor (@link #} got new
-	 * values.<br>
+	 * This method is called by sens-ation, if the sensor got new values.<br>
 	 * If the
 	 * 
 	 * 

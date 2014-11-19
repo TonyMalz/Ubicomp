@@ -27,10 +27,11 @@ import com.phidgets.event.TagLossListener;
 /**
  * RFID Phidget Test Class
  * <p>
- * Waits for an RFID Phidget to connect via USB or webservice <br/>
  * <ul>
+ * <li>Waits for an RFID Phidget to connect via USB or webservice
+ * <li>Connects to the sens-ation server on port 5000
+ * <li>
  * <li>Blinks on tag recognition
- * <li>Tries to open a browser window if {@link #TEST_TOKEN} was identified
  * </ul>
  * </p>
  */
@@ -45,12 +46,15 @@ public class RFIDSensor {
 	private static XmlRpcClient server;
 
 	/**
-	 * Main method<br/>
+	 * Main method</br>
 	 * 
-	 * Tries to initialize the RFID phidget and starts listening for events
-	 * 
-	 * @param args
-	 * @throws IOException
+	 * <p>
+	 * <ul>
+	 * <li>Tries to initialize the RFID phidget
+	 * <li>Connects to sens-ation on port 5000
+	 * <li>Registers as Sensor at sens-ation
+	 * </ul>
+	 * </p>
 	 */
 	public static void main(String[] args) {
 		RFIDPhidget rfid;
@@ -77,7 +81,8 @@ public class RFIDSensor {
 					System.out.println("RFIDSensor: Server is running...");
 				}
 			} catch (Exception e) {
-				System.err.println("RFIDSensor: XML request failed: " + e.getMessage());
+				System.err.println("RFIDSensor: XML request failed: "
+						+ e.getMessage());
 				System.exit(0);
 			}
 
@@ -92,11 +97,12 @@ public class RFIDSensor {
 				String response = (String) server.execute(
 						"SensorPort.updateSensor", xml);
 				if (response.equals(SENSOR_ID)) {
-					System.out.println("RFIDSensor: Sensor with id: " + SENSOR_ID
-							+ " was registered successfully");
+					System.out.println("RFIDSensor: Sensor with id: "
+							+ SENSOR_ID + " was registered successfully");
 				}
 			} catch (Exception e) {
-				System.err.println("RFIDSensor: XML request failed:" + e.getMessage());
+				System.err.println("RFIDSensor: XML request failed:"
+						+ e.getMessage());
 				System.exit(0);
 			}
 
@@ -114,7 +120,8 @@ public class RFIDSensor {
 				param.add(SENSOR_ID);
 				server.execute("SensorPort.unregisterSensor", param);
 			} catch (Exception e) {
-				System.err.println("RFIDSensor: XML request failed:" + e.getMessage());
+				System.err.println("RFIDSensor: XML request failed:"
+						+ e.getMessage());
 			}
 
 			// DONE
@@ -132,13 +139,16 @@ public class RFIDSensor {
 	 * <li>AttachListener: &nbsp; &nbsp; antenna on; LED off</li>
 	 * <li>DetachListener: &nbsp;&nbsp;&nbsp;log event</li>
 	 * <li>ErrorListener: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;log event</li>
-	 * <li>TagGainListener: &nbsp; LED on->off ->on; eventually
-	 * {@link #openBrowser(String)}</li>
-	 * <li>TagLossListener: &nbsp; LED off</li>
+	 * <li>TagGainListener: &nbsp; LED on->off ->on<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sends
+	 * {@link #SENSOR_ID}, an empty string and a string which contains
+	 * {@link #EVENT_TAG_GAINED} and the RFID tag to sens-ation</li>
+	 * <li>TagLossListener: &nbsp; LED off<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sends
+	 * {@link #SENSOR_ID}, an empty string and a string which contains
+	 * {@link #EVENT_TAG_LOST} and the RFID tag to sens-ation</li>
 	 * </ul>
-	 * </br> If the tag's id equals <i>{@link #TEST_TOKEN}</i>,
-	 * {@link #openBrowser()} will be executed with <i>{@link #TEST_URL}</i> as
-	 * input.
+	 * </br>
 	 * 
 	 * @param rfid
 	 *            : the RFIDPhidget object, which will get the listeners
@@ -193,8 +203,8 @@ public class RFIDSensor {
 					System.err.println("XMLRPC Error:" + e.getMessage());
 				}
 
-				System.out.println("RFIDSensor: Tag Gained: " + oe.getValue() + " (Proto:"
-						+ oe.getProtocol() + ")");
+				System.out.println("RFIDSensor: Tag Gained: " + oe.getValue()
+						+ " (Proto:" + oe.getProtocol() + ")");
 				try {
 					blink(((RFIDPhidget) oe.getSource()));
 
@@ -238,8 +248,8 @@ public class RFIDSensor {
 					((RFIDPhidget) oe.getSource()).setLEDOn(false);
 				} catch (PhidgetException e) {
 				}
-				System.out.println("RFIDSensor: Tag Lost: " + oe.getValue() + " (Proto:"
-						+ oe.getProtocol() + ")");
+				System.out.println("RFIDSensor: Tag Lost: " + oe.getValue()
+						+ " (Proto:" + oe.getProtocol() + ")");
 				System.out.println();
 			}
 		});

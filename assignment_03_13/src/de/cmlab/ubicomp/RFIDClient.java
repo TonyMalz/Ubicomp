@@ -9,6 +9,19 @@ import java.util.Vector;
 import org.apache.xmlrpc.WebServer;
 import org.apache.xmlrpc.XmlRpcClient;
 
+/**
+ * Sens-ation client for RFID-phidget
+ * <p>
+ * <ul>
+ * <li>Starts local XML-RPC Server listening on port 12345 to receive
+ * notifications from sens-ation
+ * <li>Connects to sens-ation server on port 5000
+ * <li>Checks whether RFID sensor is available
+ * <li>Subscribes to RFID sensor at sens-ation
+ * <li>Reacts to the values of RFID sensor received from sens-ation server
+ * </ul>
+ * </p>
+ */
 public class RFIDClient {
 	private static int CLIENT_XML_RPC_PORT = 12345;
 
@@ -18,6 +31,17 @@ public class RFIDClient {
 	private static final String TEST_URL = "https://www.google.com";
 	private static final String TEST_TOKEN = "1900c5ed12";
 
+	/**
+	 * This method is called by sens-ation, if the sensor (@link #} got new
+	 * values.<br>
+	 * If the
+	 * 
+	 * 
+	 * @param sensorID
+	 * @param dateStamp
+	 * @param value
+	 * @return string "ok"
+	 */
 	public String notify(String sensorID, String dateStamp, String value) {
 		System.out.println("RFIDClient: " + sensorID + " " + dateStamp + " "
 				+ value);
@@ -43,7 +67,8 @@ public class RFIDClient {
 		if (Desktop.isDesktopSupported()) {
 			Desktop desktop = Desktop.getDesktop();
 			try {
-				System.out.print("RFIDClient: opening browser with URL: " + url + " ...");
+				System.out.print("RFIDClient: opening browser with URL: " + url
+						+ " ...");
 				desktop.browse(new URI(url));
 				System.out.println("ok");
 			} catch (IOException | URISyntaxException e) {
@@ -52,7 +77,8 @@ public class RFIDClient {
 		} else {
 			Runtime runtime = Runtime.getRuntime();
 			try {
-				System.out.print("RFIDClient: opening browser with URL: " + url + " ...");
+				System.out.print("RFIDClient: opening browser with URL: " + url
+						+ " ...");
 				runtime.exec("xdg-open " + url);
 				System.out.println("ok");
 			} catch (IOException e) {
@@ -61,6 +87,20 @@ public class RFIDClient {
 		}
 	}
 
+	/**
+	 * Main Method
+	 * <p>
+	 * <ul>
+	 * <li>Starts local XML-RPC Server listening on port
+	 * {@link #CLIENT_XML_RPC_PORT} to receive notifications from sens-ation
+	 * <li>Connects to sens-ation server on port{@link #SENSATION_XML_RPC_PORT}
+	 * <li>Checks whether RFID sensor is available
+	 * <li>Subscribes to RFID sensor at sens-ation
+	 * <li>Reacts to the values of RFID sensor received from sens-ation server
+	 * </ul>
+	 * </p>
+	 * 
+	 */
 	public static void main(String[] args) {
 		try {
 

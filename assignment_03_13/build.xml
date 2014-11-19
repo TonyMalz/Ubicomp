@@ -53,12 +53,19 @@
 	</target>
 
 	<target name="dist" depends="compile">
-		<jar destfile="${dist}/${ant.project.name}.jar" basedir="${build}">
+		<jar destfile="${dist}/RFIDClient.jar" basedir="${build}" includes="de/cmlab/ubicomp/RFIDClient.class">
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
-				<attribute name="Main-Class" value="de.cmlab.ubicomp.RFID" />
-				<attribute name="Class-Path" value=". ../lib/phidget21.jar" />
+				<attribute name="Main-Class" value="de.cmlab.ubicomp.RFIDClient" />
 			</manifest>
+			<zipgroupfileset dir="${lib}" includes="xmlrpc-1.2-b1.jar"/>
+		</jar>
+		<jar destfile="${dist}/RFIDSensor.jar" basedir="${build}" includes="de/cmlab/ubicomp/RFIDSensor.class">
+			<manifest>
+		        <attribute name="Built-By" value="${user.name}" />
+		        <attribute name="Main-Class" value="de.cmlab.ubicomp.RFIDSensor" />
+		    </manifest>
+		    <zipgroupfileset dir="${lib}" includes="xmlrpc-1.2-b1.jar, phidget21.jar "/>
 		</jar>
 	</target>
 	
@@ -66,6 +73,7 @@
 	<target name="clean" description="clean up">
 		<delete dir="${build}"/>
 		<delete dir="${dist}"/>
+		<delete dir="${doc}"/>
 	</target>
 
 	<target name="javadoc">
